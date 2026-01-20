@@ -17,46 +17,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ページの読み込み完了イベント
-window.addEventListener('load', function() {
-    // ローディング画面の要素を取得
-    const loader = document.getElementById('loader-wrap');
-    
-    // 'loaded' クラスを追加して、CSSのフェードアウトをトリガー
-    if (loader) {
-        setTimeout(() => {
-            loader.classList.add('loaded');
-        }, 2500); // 2.5秒遅延
-    }
-});
 
 // ... (もし他にハンバーガーメニューなどのコードがあれば、それはそのまま残してください) ...
 
-const video = document.getElementById('intro-video');
-const loaderWrap = document.getElementById('loader-wrap');
-const loaderPercent = document.getElementById('loader-percent');
+document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('intro-video');
+    const loaderWrap = document.getElementById('loader-wrap');
+    const loaderPercent = document.getElementById('loader-percent');
 
-video.addEventListener('canplay', () => {
-    const duration = video.duration;
-    const totalTime = (!duration || isNaN(duration)) ? 1000 : duration * 1000;
+    // 必要な要素が存在しない場合は何もしない
+    if (!video || !loaderWrap || !loaderPercent) return;
 
-    let start = null;
+    video.addEventListener('canplay', () => {
+        const duration = video.duration;
+        const totalTime = (!duration || isNaN(duration)) ? 1000 : duration * 1000;
 
-    function updateProgress(timestamp) {
-        if (!start) start = timestamp;
-        const elapsed = timestamp - start;
-        let percent = Math.min((elapsed / totalTime) * 100, 100);
-        loaderPercent.textContent = Math.floor(percent) + '%';
+        let start = null;
 
-        if (percent < 100) {
-            requestAnimationFrame(updateProgress);
-        } else {
-            // 100%になったら少し待ってフェードアウト
-            setTimeout(() => {
-                if (loaderWrap) loaderWrap.classList.add('loaded');
-            }, 300);
+        function updateProgress(timestamp) {
+            if (!start) start = timestamp;
+            const elapsed = timestamp - start;
+            let percent = Math.min((elapsed / totalTime) * 100, 100);
+
+            loaderPercent.textContent = Math.floor(percent) + '%';
+
+            if (percent < 100) {
+                requestAnimationFrame(updateProgress);
+            } else {
+                setTimeout(() => {
+                    loaderWrap.classList.add('loaded');
+                }, 300);
+            }
         }
-    }
 
-    requestAnimationFrame(updateProgress);
+        requestAnimationFrame(updateProgress);
+    });
 });
